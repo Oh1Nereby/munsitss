@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>전학생 학교생활 적응 실태 조사</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:#17202a;font-family:Arial,'Noto Sans KR',sans-serif}.wrap{max-width:720px;margin:auto;min-height:100vh;padding:28px 18px}.card{background:white;border:1px solid #e3e7ec;border-radius:16px;padding:28px;box-shadow:0 8px 30px #0000000a}.brand{font-size:13px;color:#64748b;margin-bottom:8px}.title{font-size:28px;font-weight:800;margin:0 0 12px}.sub{color:#64748b;line-height:1.6}.q{font-size:20px;font-weight:750;margin:0 0 18px}.opt{display:block;width:100%;text-align:left;padding:15px;margin:9px 0;border:1px solid #d9dee6;background:#fff;border-radius:10px;cursor:pointer;font-size:15px}.opt:hover{background:#f8fafc}.next{width:100%;padding:15px;border:0;border-radius:10px;background:#111827;color:white;font-weight:700;cursor:pointer;margin-top:12px}.small{font-size:12px;color:#94a3b8}.hidden{display:none}.progress{height:6px;background:#e5e7eb;border-radius:10px;overflow:hidden;margin:0 0 24px}.bar{height:100%;width:0;background:#111827;transition:.35s}.loader{height:170px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px}.spinner{width:42px;height:42px;border:4px solid #e5e7eb;border-top-color:#111827;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.result{font-size:22px;font-weight:800;line-height:1.55}.ig{font-weight:800;font-size:20px;letter-spacing:.2px}.notice{padding:13px 14px;background:#f8fafc;border-radius:10px;color:#475569;line-height:1.55;margin-top:16px}.modal{position:fixed;inset:0;background:#0008;display:flex;align-items:center;justify-content:center;padding:20px;z-index:99}.modalbox{background:#fff;border-radius:16px;padding:24px;width:min(420px,100%);box-shadow:0 20px 60px #0005;text-align:center}.modalbox h3{margin:0 0 12px;font-size:22px}.modalbox p{margin:0 0 20px;color:#475569}.modalbtn{width:100%;padding:14px;border:0;border-radius:10px;background:#111827;color:#fff;font-weight:700;cursor:pointer}
+</style></head>
+<body><main class="wrap"><div class="card">
+<div id="survey">
+<div class="brand">문시중학교 · 학생생활지원</div><h1 class="title">전학생 학교생활 적응 실태 조사</h1><p class="sub">전학생의 학교생활 적응과 만족도를 확인하기 위한 설문입니다.<br>약 3~5분 정도 소요됩니다.</p><button class="next" onclick="start()">설문 시작하기</button><p class="small" style="margin-top:18px">※ 본 페이지는 웹 기반 설문 형식의 개인 제작 프로그램입니다.</p>
+</div>
+<div id="app" class="hidden"><div class="progress"><div id="bar" class="bar"></div></div><div id="content"></div></div>
+</div></main>
+<script>
+const questions=[
+['전학생활에 전반적으로 만족하시나요?',['매우 만족','만족','보통','불만족','매우 불만족']],
+['새로운 학교에 적응하는 데 어려움이 있었나요?',['전혀 없었다','조금 있었다','보통이었다','많이 있었다']],
+['현재 친구 관계에 만족하시나요?',['매우 만족','만족','보통','불만족']],
+['학교 급식에 만족하시나요?',['매우 만족','만족','보통','불만족','매우 불만족']],
+['학교 시설 및 교실 환경에 만족하시나요?',['매우 만족','만족','보통','불만족']],
+['동아리 및 학교 활동에 관심이 있나요?',['매우 많다','많은 편이다','보통이다','별로 없다','전혀 없다']],
+['학교생활에서 가장 중요하다고 생각하는 것은 무엇인가요?',['친구 관계','수업 및 학습','급식','시설','동아리 및 활동']],
+['현재 가족 구성은 어떻게 되나요?',['형제가 있다','외동이다','잘 모르겠다']],
+];
+let i=0, family=null;
+function start(){document.getElementById('survey').classList.add('hidden');document.getElementById('app').classList.remove('hidden');showQ();}
+function showQ(){document.getElementById('bar').style.width=(i/questions.length*100)+'%';let [q,opts]=questions[i];render(q,opts,(v,el)=>{if(i===7){family=v; if(v==='형제가 있다'){i++;showSibling();}else{removeAndConfirm(v,()=>{} ,el)}}else{i++; if(i<questions.length)showQ();else showSibling();}})}
+function render(q,opts,cb){let c=document.getElementById('content');c.innerHTML='<h2 class="q">'+q+'</h2>'+opts.map((o,n)=>`<button class="opt" onclick="choose(${n},this)">${o}</button>`).join('');window.choose=(n,el)=>cb(opts[n],el);}
+function fakeCheck(v){let c=document.getElementById('content');c.innerHTML='<h2 class="q">응답을 확인하고 있습니다.</h2><p class="sub">추가 확인이 필요한 항목이 있는지 확인하는 중입니다.</p><button class="next" onclick="showSibling()">다음</button>';}
+function showSibling(){document.getElementById('bar').style.width='72%';render('형제자매가 있다면 어떻게 되나요?',['동생이 있습니다','오빠가 있습니다','언니가 있습니다','여러 명입니다'],(v,el)=>{if(v==='동생이 있습니다'){siblingDetails()}else{removeAndConfirm(el)}})}
+function popSequence(n){const msgs=['진짜요?','다시 확인해 주세요.','정말 맞나요?'];if(n<msgs.length){alert(msgs[n]);showSibling();}else{siblingDetails()}}
+function siblingDetails(){document.getElementById('bar').style.width='80%';schoolLevel()}
+function schoolLevel(){document.getElementById('bar').style.width='86%';render('동생과 평소 관계는 어떤 편인가요?',['매우 친하다','친한 편이다','보통이다','가끔 다툰다'],()=>normalEnd())}
+function normalEnd(){document.getElementById('bar').style.width='92%';render('추가 설문에 참여하시겠습니까?',['참여합니다','참여하지 않습니다'],(v,el)=>{if(v==='참여합니다')extraIntro();else removeAndConfirm(el)})}
+function removeAndConfirm(el){const modal=document.createElement('div');modal.className='modal';modal.innerHTML='<div class="modalbox"><h3>정말요?</h3><p>다시 한번 생각해 주세요.</p><button class="modalbtn">네, 정말입니다</button></div>';document.body.appendChild(modal);modal.querySelector('.modalbtn').onclick=()=>{modal.remove();if(el)el.remove();};}function extraIntro(){document.getElementById('content').innerHTML='<h2 class="q">설문이 모두 완료되었습니다.</h2><p class="sub">응답해 주셔서 감사합니다.</p><button class="next" onclick="extra()">추가 설문 진행하기</button>';}
+function extra(){document.getElementById('bar').style.width='96%';render('가족 구성원의 사진을 온라인에서 공유할 의향이 있습니까?',['예, 공유할 의향이 있습니다.','상황에 따라 다릅니다.','아니요, 공유하고 싶지 않습니다.'],(v,el)=>{if(v.startsWith('예'))cute();else removeAndConfirm(el)})}
+function insist(n){const msgs=['정말요?','진짜요?','다시 생각해보시죠.'];if(n<msgs.length){alert(msgs[n]);render('가족 구성원의 사진을 온라인에서 공유할 의향이 있습니까?',['예, 공유할 의향이 있습니다.','상황에 따라 다릅니다.','아니요, 공유하고 싶지 않습니다.'],v=>{if(v.startsWith('예'))cute();else insist(n+1)})}else cute()}
+function cute(){
+ document.getElementById('bar').style.width='100%';
+ const c=document.getElementById('content');
+ const opts=['매우 귀엽다','귀여운 편이다','보통이다','잘 모르겠다','귀엽지 않다'];
+ c.innerHTML='<h2 class="q">동생은 귀엽다고 생각하시나요?</h2>'+opts.map((o,n)=>`<button class="opt" onclick="cuteChoose(${n})">${o}</button>`).join('');
+ window.cuteChoose=function(n){
+   if(n===0){ loading(); return; }
+   showCuteModal();
+ };
+}
+function showCuteModal(){
+ const modal=document.createElement('div');
+ modal.className='modal';
+ modal.innerHTML='<div class="modalbox"><h3>정말요?</h3><p>다시 한번 생각해 주세요.</p><button class="modalbtn" onclick="confirmNotCute()">네, 정말입니다</button></div>';
+ document.body.appendChild(modal);
+}
+function confirmNotCute(){
+ const modal=document.querySelector('.modal');
+ if(modal) modal.remove();
+ const c=document.getElementById('content');
+ c.innerHTML='<h2 class="q">동생은 귀엽다고 생각하시나요?</h2><p class="sub">응답이 확인되었습니다.</p>';
+ setTimeout(loading,650);
+}
+function loading(){document.getElementById('content').innerHTML='<div class="loader"><div class="spinner"></div><div>응답 결과를 분석하고 있습니다.<br><b id="pct">0%</b></div></div>';let p=0;let t=setInterval(()=>{p+=5;document.getElementById('pct').textContent=p+'%';if(p>=100){clearInterval(t);setTimeout(result,400)}},90)}
+function result(){document.getElementById('content').innerHTML='<div class="brand">추가 확인 결과</div><div class="result">귀하의 응답을 종합한 결과,<br><br>동생 사진 확인이 필요합니다.</div><div class="notice">📸 그렇다면 당신의 동생 사진을<br><span class="ig">인스타그램 @s_yxoonk</span>로 보내세요.</div><button class="next" onclick="finish()">확인했습니다</button>'}
+function finish(){document.getElementById('content').innerHTML='<h2 class="q">설문이 모두 완료되었습니다.</h2><p class="sub">참여해 주셔서 감사합니다.</p><div style="text-align:center;font-size:24px;font-weight:800;margin:35px 0">감사합니다.</div><button class="next" onclick="location.reload()">설문 종료</button>'}
+</script></body></html>
